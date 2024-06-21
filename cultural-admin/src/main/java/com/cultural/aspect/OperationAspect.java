@@ -45,7 +45,7 @@ public class OperationAspect {
     @Before("requestInterceptor()")
     public void interceptorDo(JoinPoint point) throws BusinessException {
         Object[] arguments = point.getArgs();
-        Method method = ((MethodSignature) point.getSignature()).getMethod();
+        Method method = ((MethodSignature) point.getSignature()).getMethod(); // method.getName() 获取方法名
         GlobalInterceptor interceptor = method.getAnnotation(GlobalInterceptor.class);
         if (interceptor == null) {
             return;
@@ -61,6 +61,7 @@ public class OperationAspect {
             checkPermission(interceptor.permissionCode());
         }
 
+        /** 参数校验 */
         if (interceptor.checkParams()) {
             validateParams(method, arguments);
         }
@@ -98,9 +99,9 @@ public class OperationAspect {
             if (verifyParam == null) {
                 continue;
             }
-            String paramTypeName = parameter.getParameterizedType().getTypeName();
+            String paramTypeName = parameter.getParameterizedType().getTypeName(); // 参数类型名
 
-            if (ArrayUtils.contains(BASE_TYPE_ARRAY, paramTypeName)) {
+            if (ArrayUtils.contains(BASE_TYPE_ARRAY, paramTypeName)) { // 是否在规则内
                 checkValue(value, verifyParam);
             } else {
                 checkObjValue(parameter, value);
