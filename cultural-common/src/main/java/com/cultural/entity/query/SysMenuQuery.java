@@ -56,6 +56,15 @@ public class SysMenuQuery extends BaseParam {
 
 	private String iconFuzzy;
 
+	private Boolean formate2Tree;  // 是否格式化为树形
+
+	public Boolean getFormate2Tree() {
+		return formate2Tree;
+	}
+
+	public void setFormate2Tree(Boolean formate2Tree) {
+		this.formate2Tree = formate2Tree;
+	}
 
 	public void setMenuId(Integer menuId){
 		this.menuId = menuId;

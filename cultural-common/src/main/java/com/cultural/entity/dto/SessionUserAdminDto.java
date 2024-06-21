@@ -3,6 +3,9 @@ package com.cultural.entity.dto;
 
 //import com.cultural.entity.vo.SysMenuVO;
 
+import com.cultural.entity.po.SysMenu;
+import com.cultural.entity.vo.SysMenuVO;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class SessionUserAdminDto implements Serializable {
     private String userName;
     private Boolean superAdmin;
 
-//    private List<SysMenuVO> menuList;
+    private List<SysMenuVO> menuList;
 
     private List<String> permissionCodeList;
 
@@ -44,13 +47,13 @@ public class SessionUserAdminDto implements Serializable {
         this.superAdmin = superAdmin;
     }
 
-//    public List<SysMenuVO> getMenuList() {
-//        return menuList;
-//    }
+    public List<SysMenuVO> getMenuList() {
+        return menuList;
+    }
 
-//    public void setMenuList(List<SysMenuVO> menuList) {
-//        this.menuList = menuList;
-//    }
+    public void setMenuList(List<SysMenuVO> menuList) {
+        this.menuList = menuList;
+    }
 
     public List<String> getPermissionCodeList() {
         return permissionCodeList;

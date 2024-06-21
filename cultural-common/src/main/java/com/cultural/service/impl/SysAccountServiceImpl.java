@@ -1,12 +1,18 @@
 package com.cultural.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.cultural.entity.dto.SessionUserAdminDto;
 import com.cultural.entity.enums.SysAccountStatusEnum;
+import com.cultural.entity.po.SysMenu;
+import com.cultural.entity.query.SysMenuQuery;
+import com.cultural.entity.vo.SysMenuVO;
 import com.cultural.exception.BusinessException;
+import com.cultural.service.SysMenuService;
+import com.cultural.utils.CopyTools;
 import org.springframework.stereotype.Service;
 
 import com.cultural.entity.enums.PageSize;
@@ -27,6 +33,9 @@ public class SysAccountServiceImpl implements SysAccountService {
 
     @Resource
     private SysAccountMapper<SysAccount, SysAccountQuery> sysAccountMapper;
+
+    @Resource
+    private SysMenuService sysMenuService;
 
     /**
      * 根据条件查询列表
@@ -167,10 +176,24 @@ public class SysAccountServiceImpl implements SysAccountService {
         if (!sysAccount.getPassword().equals(password)) {
             throw new BusinessException("账号或密码错误！");
         }
+        // 查找菜单
+        SysMenuQuery query = new SysMenuQuery();
+        query.setFormate2Tree(true);
+        query.setOrderBy("sort asc");
+        List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
+        List<SysMenuVO> menuVOList = new ArrayList<>();
+
+        sysMenus.forEach(item -> {
+            SysMenuVO menuVO = CopyTools.copy(item, SysMenuVO.class);
+            menuVO.setChildren(CopyTools.copyList(item.getChildren(), SysMenuVO.class));
+            menuVOList.add(menuVO);
+        });
+
         SessionUserAdminDto adminDto = new SessionUserAdminDto();
         adminDto.setSuperAdmin(true);
         adminDto.setUserid(sysAccount.getUserId());
         adminDto.setUserName(sysAccount.getUserName());
+        adminDto.setMenuList(menuVOList); // 写入菜单项
         return adminDto;
     }
 }

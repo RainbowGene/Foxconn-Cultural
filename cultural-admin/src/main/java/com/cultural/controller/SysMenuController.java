@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  *  Controller
  */
 @RestController("sysMenuController")
-@RequestMapping("/sysMenu")
+@RequestMapping("/settings")
 public class SysMenuController extends ABaseController{
 
 	@Resource
@@ -24,8 +24,12 @@ public class SysMenuController extends ABaseController{
 	/**
 	 * 根据条件分页查询
 	 */
-	@RequestMapping("/loadDataList")
-	public ResponseVO loadDataList(SysMenuQuery query){
-		return getSuccessResponseVO(sysMenuService.findListByPage(query));
+	@RequestMapping("/menuList")
+	public ResponseVO loadDataList(){
+		SysMenuQuery query = new SysMenuQuery();
+		query.setFormate2Tree(true);  // 需要格式化为tree
+		query.setOrderBy("sort asc");
+		List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
+		return getSuccessResponseVO(sysMenus);
 	}
 }

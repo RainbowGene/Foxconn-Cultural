@@ -2,6 +2,7 @@ package com.cultural.entity.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -50,6 +51,18 @@ public class SysMenu implements Serializable {
 	 */
 	private String icon;
 
+	/**
+	 * 自定义：子节点
+	 */
+	private List<SysMenu> children;
+
+	public List<SysMenu> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<SysMenu> children) {
+		this.children = children;
+	}
 
 	public void setMenuId(Integer menuId){
 		this.menuId = menuId;
