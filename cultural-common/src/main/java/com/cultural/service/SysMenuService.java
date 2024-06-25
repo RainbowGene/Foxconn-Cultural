@@ -69,4 +69,7 @@ public interface SysMenuService {
 	 */
 	Integer deleteSysMenuByMenuId(Integer menuId);
 
+	public List<SysMenu> convertLine2Tree4Menu(List<SysMenu> dataList, Integer pid);
+
+	void saveMenu(SysMenu sysMenu);
 }

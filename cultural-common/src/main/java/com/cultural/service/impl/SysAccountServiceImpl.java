@@ -178,10 +178,19 @@ public class SysAccountServiceImpl implements SysAccountService {
         }
         // 查找菜单
         SysMenuQuery query = new SysMenuQuery();
-        query.setFormate2Tree(true);
+        query.setFormate2Tree(false);
         query.setOrderBy("sort asc");
         List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
+
+        // 权限编码
+        List<String> permissionCodeList = new ArrayList<>();
+        sysMenus.forEach(item -> {
+           permissionCodeList.add(item.getPermission());
+        });
+
+        sysMenus = sysMenuService.convertLine2Tree4Menu(sysMenus,0);
         List<SysMenuVO> menuVOList = new ArrayList<>();
+
 
         sysMenus.forEach(item -> {
             SysMenuVO menuVO = CopyTools.copy(item, SysMenuVO.class);
@@ -194,6 +203,7 @@ public class SysAccountServiceImpl implements SysAccountService {
         adminDto.setUserid(sysAccount.getUserId());
         adminDto.setUserName(sysAccount.getUserName());
         adminDto.setMenuList(menuVOList); // 写入菜单项
+        adminDto.setPermissionCodeList(permissionCodeList); // 写入权限编码
         return adminDto;
     }
 }

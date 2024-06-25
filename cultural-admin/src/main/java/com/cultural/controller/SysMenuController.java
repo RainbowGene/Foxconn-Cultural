@@ -2,6 +2,8 @@ package com.cultural.controller;
 
 import java.util.List;
 
+import com.cultural.annotation.GlobalInterceptor;
+import com.cultural.annotation.VerifyParam;
 import com.cultural.entity.query.SysMenuQuery;
 import com.cultural.entity.po.SysMenu;
 import com.cultural.entity.vo.ResponseVO;
@@ -13,23 +15,51 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- *  Controller
+ * Controller
  */
 @RestController("sysMenuController")
 @RequestMapping("/settings")
-public class SysMenuController extends ABaseController{
+public class SysMenuController extends ABaseController {
 
-	@Resource
-	private SysMenuService sysMenuService;
-	/**
-	 * 根据条件分页查询
-	 */
-	@RequestMapping("/menuList")
-	public ResponseVO loadDataList(){
-		SysMenuQuery query = new SysMenuQuery();
-		query.setFormate2Tree(true);  // 需要格式化为tree
-		query.setOrderBy("sort asc");
-		List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
-		return getSuccessResponseVO(sysMenus);
-	}
+    @Resource
+    private SysMenuService sysMenuService;
+
+    /**
+     * 根据条件分页查询
+     */
+    @RequestMapping("/menuList")
+    @GlobalInterceptor
+    public ResponseVO menuList() {
+        SysMenuQuery query = new SysMenuQuery();
+        query.setFormate2Tree(true);  // 需要格式化为tree
+        query.setOrderBy("sort asc");
+        List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
+        return getSuccessResponseVO(sysMenus);
+    }
+
+    /**
+     * 新增/修改
+     *
+     * @param sysMenu
+     * @return
+     */
+    @RequestMapping("/saveMenu")
+    @GlobalInterceptor
+    public ResponseVO saveMenu(@VerifyParam SysMenu sysMenu) {
+        sysMenuService.saveMenu(sysMenu);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * 删除菜单
+     * @param menuId
+     * @return
+     */
+    @RequestMapping("/delMenu")
+    @GlobalInterceptor
+    public ResponseVO delMenu(@VerifyParam(required = true) Integer menuId) {
+        sysMenuService.deleteSysMenuByMenuId(menuId);
+        return getSuccessResponseVO(null);
+    }
+
 }

@@ -53,6 +53,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      *
      * @return
      */
+    @Override
     public List<SysMenu> convertLine2Tree4Menu(List<SysMenu> dataList, Integer pid) {
         List<SysMenu> children = new ArrayList<>();
         for (SysMenu m : dataList) {
@@ -157,5 +158,14 @@ public class SysMenuServiceImpl implements SysMenuService {
     @Override
     public Integer deleteSysMenuByMenuId(Integer menuId) {
         return this.sysMenuMapper.deleteByMenuId(menuId);
+    }
+
+    @Override
+    public void saveMenu(SysMenu sysMenu) {
+        if (sysMenu.getMenuId() == null) { // 新增
+            this.sysMenuMapper.insert(sysMenu);
+        } else {
+            this.sysMenuMapper.updateByMenuId(sysMenu, sysMenu.getMenuId()); // 修改
+        }
     }
 }
