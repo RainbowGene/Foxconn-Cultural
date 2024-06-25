@@ -1,12 +1,14 @@
 package com.cultural.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.cultural.entity.dto.SessionUserAdminDto;
 import com.cultural.entity.enums.SysAccountStatusEnum;
+import com.cultural.entity.enums.UserStatusEnum;
 import com.cultural.entity.po.SysMenu;
 import com.cultural.entity.query.SysMenuQuery;
 import com.cultural.entity.vo.SysMenuVO;
@@ -205,5 +207,25 @@ public class SysAccountServiceImpl implements SysAccountService {
         adminDto.setMenuList(menuVOList); // 写入菜单项
         adminDto.setPermissionCodeList(permissionCodeList); // 写入权限编码
         return adminDto;
+    }
+
+    @Override
+    public void saveSysAccount(SysAccount sysAccount) {
+        SysAccount phoneDb = sysAccountMapper.selectByPhone(sysAccount.getPhone());
+        /** 条件1：数据库没有，条件2：是添加账户而不是修改 */
+        if (phoneDb != null && (sysAccount.getUserId() == null || !phoneDb.getUserId().equals(sysAccount.getUserId()))) {
+            throw new BusinessException("手机号已存在！");
+        }
+        /** 新增*/
+        if (sysAccount.getUserId() == null) {
+            sysAccount.setCreateTime(new Date());
+            sysAccount.setStatus(UserStatusEnum.ENABLE.getStatus());
+            sysAccount.setPassword(StringTools.encodeByMD5(sysAccount.getPassword()));
+            this.sysAccountMapper.insert(sysAccount);
+        } else {
+            sysAccount.setPassword(null);
+            sysAccount.setStatus(null);
+            this.sysAccountMapper.updateByUserId(sysAccount, sysAccount.getUserId());
+        }
     }
 }

@@ -95,4 +95,6 @@ public interface SysAccountService {
 	 * @return
 	 */
 	SessionUserAdminDto login(String phone, String password);
+
+	void saveSysAccount(SysAccount sysAccount);
 }

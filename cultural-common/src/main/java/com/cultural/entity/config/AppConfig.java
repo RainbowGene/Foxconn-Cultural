@@ -25,6 +25,24 @@ public class AppConfig {
     @Value("${isDev:false}")
     private Boolean isDev;
 
+    @Value("${super.admin.phones:}")
+    private String superAdminPhones;
+
+    @Value("${jwt.common.secret:}")
+    private String jwtCommonSecret;
+
+    public String getSuperAdminPhones() {
+        return superAdminPhones;
+    }
+
+    public String getJwtCommonSecret() {
+        return jwtCommonSecret;
+    }
+
+    public void setJwtCommonSecret(String jwtCommonSecret) {
+        this.jwtCommonSecret = jwtCommonSecret;
+    }
+
     public String getProjectFolder() {
         if (!StringTools.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {
             projectFolder = projectFolder + "/";

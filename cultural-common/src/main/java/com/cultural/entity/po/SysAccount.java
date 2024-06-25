@@ -1,5 +1,7 @@
 package com.cultural.entity.po;
 
+import com.cultural.annotation.VerifyParam;
+import com.cultural.entity.enums.VerifyRegexEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import com.cultural.entity.enums.DateTimePatternEnum;
@@ -25,16 +27,20 @@ public class SysAccount implements Serializable {
 	 * 电话号码
 	 */
 	@JsonIgnore
+	@VerifyParam(required = true, regex = VerifyRegexEnum.PHONE)
 	private String phone;
 
 	/**
 	 * 用户名
 	 */
+	@VerifyParam(required = true, max = 20)
 	private String userName;
 
 	/**
 	 * 密码
 	 */
+	@JsonIgnore
+	@VerifyParam(regex = VerifyRegexEnum.PASSWORD)
 	private String password;
 
 	/**
@@ -48,8 +54,9 @@ public class SysAccount implements Serializable {
 	private Integer status;
 
 	/**
-	 * 角色
+	 * 角色:多个用","隔开
 	 */
+	@VerifyParam(required = true)
 	private String roles;
 
 	/**
@@ -69,6 +76,15 @@ public class SysAccount implements Serializable {
 	 */
 	private String email;
 
+	private String roleNames;
+
+	public String getRoleNames() {
+		return roleNames;
+	}
+
+	public void setRoleNames(String roleNames) {
+		this.roleNames = roleNames;
+	}
 
 	public void setUserId(Integer userId){
 		this.userId = userId;

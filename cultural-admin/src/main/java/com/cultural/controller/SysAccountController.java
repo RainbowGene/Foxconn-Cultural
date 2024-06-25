@@ -2,10 +2,18 @@ package com.cultural.controller;
 
 import java.util.List;
 
+import com.cultural.annotation.VerifyParam;
+import com.cultural.entity.config.AppConfig;
+import com.cultural.entity.enums.ResponseCodeEnum;
+import com.cultural.entity.enums.UserStatusEnum;
+import com.cultural.entity.enums.VerifyRegexEnum;
 import com.cultural.entity.query.SysAccountQuery;
 import com.cultural.entity.po.SysAccount;
 import com.cultural.entity.vo.ResponseVO;
+import com.cultural.exception.BusinessException;
 import com.cultural.service.SysAccountService;
+import com.cultural.utils.StringTools;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,95 +24,73 @@ import javax.annotation.Resource;
  *  Controller
  */
 @RestController("sysAccountController")
-@RequestMapping("/sysAccount")
+@RequestMapping("/settings")
 public class SysAccountController extends ABaseController{
 
 	@Resource
 	private SysAccountService sysAccountService;
+
+	@Resource
+	private AppConfig appConfig;
 	/**
 	 * 根据条件分页查询
 	 */
-	@RequestMapping("/loadDataList")
+	@RequestMapping("/loadAccountList")
 	public ResponseVO loadDataList(SysAccountQuery query){
+		query.setOrderBy("create_time desc");
+		query.setQueryRoles(true);
 		return getSuccessResponseVO(sysAccountService.findListByPage(query));
 	}
 
 	/**
-	 * 新增
+	 * 增加修改用户
 	 */
-	@RequestMapping("/add")
-	public ResponseVO add(SysAccount bean) {
-		sysAccountService.add(bean);
+	@RequestMapping("/saveAccount")
+	public ResponseVO saveAccount(@VerifyParam SysAccount sysAccount) {
+		sysAccountService.saveSysAccount(sysAccount);
+		return getSuccessResponseVO(null);
+	}
+
+
+	/**
+	 * 修改密码
+	 */
+	@RequestMapping("/updatePassword")
+	public ResponseVO updatePassword(@VerifyParam Integer userId,
+									 @VerifyParam(required = true, regex = VerifyRegexEnum.PASSWORD) String password) {
+		SysAccount updateInfo = new SysAccount();
+		updateInfo.setPassword(StringTools.encodeByMD5(password));
+		sysAccountService.updateSysAccountByUserId(updateInfo, userId);
 		return getSuccessResponseVO(null);
 	}
 
 	/**
-	 * 批量新增
+	 * 启用/禁用 账号
 	 */
-	@RequestMapping("/addBatch")
-	public ResponseVO addBatch(@RequestBody List<SysAccount> listBean) {
-		sysAccountService.addBatch(listBean);
+	@RequestMapping("/updateStatus")
+	public ResponseVO updateStatus(@VerifyParam Integer userId,
+								   @VerifyParam(required = true) Integer status) {
+		UserStatusEnum userStatusEnum = UserStatusEnum.getByStatus(status);
+		if (userStatusEnum == null) {
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		SysAccount updateInfo = new SysAccount();
+		updateInfo.setStatus(status);
+		sysAccountService.updateSysAccountByUserId(updateInfo, userId);
 		return getSuccessResponseVO(null);
 	}
 
 	/**
-	 * 批量新增/修改
+	 * 删除
 	 */
-	@RequestMapping("/addOrUpdateBatch")
-	public ResponseVO addOrUpdateBatch(@RequestBody List<SysAccount> listBean) {
-		sysAccountService.addBatch(listBean);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据UserId查询对象
-	 */
-	@RequestMapping("/getSysAccountByUserId")
-	public ResponseVO getSysAccountByUserId(Integer userId) {
-		return getSuccessResponseVO(sysAccountService.getSysAccountByUserId(userId));
-	}
-
-	/**
-	 * 根据UserId修改对象
-	 */
-	@RequestMapping("/updateSysAccountByUserId")
-	public ResponseVO updateSysAccountByUserId(SysAccount bean,Integer userId) {
-		sysAccountService.updateSysAccountByUserId(bean,userId);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据UserId删除
-	 */
-	@RequestMapping("/deleteSysAccountByUserId")
-	public ResponseVO deleteSysAccountByUserId(Integer userId) {
+	@RequestMapping("/delAccount")
+	public ResponseVO delAccount(@VerifyParam Integer userId) {
+		SysAccount sysAccount = this.sysAccountService.getSysAccountByUserId(userId);
+		/** 配置项里的超级管理员(多个用,隔开)不能删除*/
+		if (!StringTools.isEmpty(appConfig.getSuperAdminPhones()) && ArrayUtils.contains(appConfig.getSuperAdminPhones().split(","), sysAccount.getPhone())) {
+			throw new RuntimeException("超级管理员不能删除！");
+		}
 		sysAccountService.deleteSysAccountByUserId(userId);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据Phone查询对象
-	 */
-	@RequestMapping("/getSysAccountByPhone")
-	public ResponseVO getSysAccountByPhone(String phone) {
-		return getSuccessResponseVO(sysAccountService.getSysAccountByPhone(phone));
-	}
-
-	/**
-	 * 根据Phone修改对象
-	 */
-	@RequestMapping("/updateSysAccountByPhone")
-	public ResponseVO updateSysAccountByPhone(SysAccount bean,String phone) {
-		sysAccountService.updateSysAccountByPhone(bean,phone);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据Phone删除
-	 */
-	@RequestMapping("/deleteSysAccountByPhone")
-	public ResponseVO deleteSysAccountByPhone(String phone) {
-		sysAccountService.deleteSysAccountByPhone(phone);
 		return getSuccessResponseVO(null);
 	}
 }

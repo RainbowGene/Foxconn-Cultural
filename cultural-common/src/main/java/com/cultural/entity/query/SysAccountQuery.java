@@ -77,6 +77,15 @@ public class SysAccountQuery extends BaseParam {
 
 	private String emailFuzzy;
 
+	private Boolean queryRoles;
+
+	public Boolean getQueryRoles() {
+		return queryRoles;
+	}
+
+	public void setQueryRoles(Boolean queryRoles) {
+		this.queryRoles = queryRoles;
+	}
 
 	public void setUserId(Integer userId){
 		this.userId = userId;

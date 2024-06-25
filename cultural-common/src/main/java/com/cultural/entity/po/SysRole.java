@@ -1,5 +1,6 @@
 package com.cultural.entity.po;
 
+import com.cultural.annotation.VerifyParam;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import com.cultural.entity.enums.DateTimePatternEnum;
@@ -25,11 +26,13 @@ public class SysRole implements Serializable {
 	/**
 	 * 角色名
 	 */
+	@VerifyParam(required = true,max = 50)
 	private String roleName;
 
 	/**
 	 * 角色描述
 	 */
+	@VerifyParam(max = 300)
 	private String roleDesc;
 
 	/**
