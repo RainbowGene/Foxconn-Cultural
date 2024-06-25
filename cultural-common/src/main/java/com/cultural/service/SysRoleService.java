@@ -12,61 +12,67 @@ import com.cultural.entity.vo.PaginationResultVO;
  */
 public interface SysRoleService {
 
-	/**
-	 * 根据条件查询列表
-	 */
-	List<SysRole> findListByParam(SysRoleQuery param);
+    /**
+     * 根据条件查询列表
+     */
+    List<SysRole> findListByParam(SysRoleQuery param);
 
-	/**
-	 * 根据条件查询列表
-	 */
-	Integer findCountByParam(SysRoleQuery param);
+    /**
+     * 根据条件查询列表
+     */
+    Integer findCountByParam(SysRoleQuery param);
 
-	/**
-	 * 分页查询
-	 */
-	PaginationResultVO<SysRole> findListByPage(SysRoleQuery param);
+    /**
+     * 分页查询
+     */
+    PaginationResultVO<SysRole> findListByPage(SysRoleQuery param);
 
-	/**
-	 * 新增
-	 */
-	Integer add(SysRole bean);
+    /**
+     * 新增
+     */
+    Integer add(SysRole bean);
 
-	/**
-	 * 批量新增
-	 */
-	Integer addBatch(List<SysRole> listBean);
+    /**
+     * 批量新增
+     */
+    Integer addBatch(List<SysRole> listBean);
 
-	/**
-	 * 批量新增/修改
-	 */
-	Integer addOrUpdateBatch(List<SysRole> listBean);
+    /**
+     * 批量新增/修改
+     */
+    Integer addOrUpdateBatch(List<SysRole> listBean);
 
-	/**
-	 * 多条件更新
-	 */
-	Integer updateByParam(SysRole bean,SysRoleQuery param);
+    /**
+     * 多条件更新
+     */
+    Integer updateByParam(SysRole bean, SysRoleQuery param);
 
-	/**
-	 * 多条件删除
-	 */
-	Integer deleteByParam(SysRoleQuery param);
+    /**
+     * 多条件删除
+     */
+    Integer deleteByParam(SysRoleQuery param);
 
-	/**
-	 * 根据RoleId查询对象
-	 */
-	SysRole getSysRoleByRoleId(Integer roleId);
-
-
-	/**
-	 * 根据RoleId修改
-	 */
-	Integer updateSysRoleByRoleId(SysRole bean,Integer roleId);
+    /**
+     * 根据RoleId查询对象
+     */
+    SysRole getSysRoleByRoleId(Integer roleId);
 
 
-	/**
-	 * 根据RoleId删除
-	 */
-	Integer deleteSysRoleByRoleId(Integer roleId);
+    /**
+     * 根据RoleId修改
+     */
+    Integer updateSysRoleByRoleId(SysRole bean, Integer roleId);
 
+
+    /**
+     * 根据RoleId删除
+     */
+    Integer deleteSysRoleByRoleId(Integer roleId);
+
+    /**
+     * 新增角色
+     */
+    void saveRole(SysRole sysRole, String menuIds, String halfMenuIds);
+
+    void saveRoleMenu(Integer roleId, String menuIds, String halfMenuIds);
 }

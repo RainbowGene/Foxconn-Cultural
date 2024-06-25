@@ -2,6 +2,8 @@ package com.cultural.mappers;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 角色对应的菜单权限表 数据库操作接口
  */
@@ -24,5 +26,5 @@ public interface SysRole2MenuMapper<T,P> extends BaseMapper<T,P> {
 	 */
 	 T selectByRoleIdAndMenuId(@Param("roleId") Integer roleId,@Param("menuId") Integer menuId);
 
-
+	 List<Integer> selectMenuIdsByRoleIds(@Param("roleIds") String[] roleIds);
 }
