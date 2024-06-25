@@ -3,6 +3,8 @@ import com.cultural.entity.enums.ResponseCodeEnum;
 import com.cultural.entity.vo.ResponseVO;
 import com.cultural.exception.BusinessException;
 
+import javax.servlet.http.HttpSession;
+
 
 public class ABaseController {
 
@@ -40,4 +42,9 @@ public class ABaseController {
         vo.setData(t);
         return vo;
     }
+
+//    protected SessionUserAdminDto getUserAdminFromSession(HttpSession session) {
+//        SessionUserAdminDto sessionUserAdminDto = (SessionUserAdminDto) session.getAttribute(Constants.SESSION_KEY);
+//        return sessionUserAdminDto;
+//    }
 }

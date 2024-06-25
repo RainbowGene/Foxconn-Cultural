@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class AppConfig {
 
     /**
-     * 文件目录
+     * 资源文件目录
      */
     @Value("${project.folder:}")
     private String projectFolder;

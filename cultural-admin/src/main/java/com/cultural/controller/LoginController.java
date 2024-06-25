@@ -64,4 +64,32 @@ public class LoginController extends ABaseController {
         session.setAttribute(Constants.SESSION_KEY, userAdminDto);
         return getSuccessResponseVO(userAdminDto);
     }
+
+    /***
+     * 退出登录
+     * @param session
+     * @return
+     */
+    @RequestMapping("/logout")
+    @GlobalInterceptor(checkLogin = false)
+    public ResponseVO logout(HttpSession session) {
+        session.invalidate();
+        return getSuccessResponseVO(null);
+    }
+
+    /***
+     * 修改密码
+     * @param session
+     * @return
+     */
+//    @RequestMapping("/updateMyPwd")
+//    @GlobalInterceptor
+//    public ResponseVO updateMyPwd(HttpSession session,
+//                                  @VerifyParam(required = true, regex = VerifyRegexEnum.PASSWORD) String password) {
+//        SessionUserAdminDto userAdminDto = getUserAdminFromSession(session);
+//        SysAccount sysAccount = new SysAccount();
+//        sysAccount.setPassword(StringTools.encodeByMD5(password));
+//        sysAccountService.updateSysAccountByUserId(sysAccount, userAdminDto.getUserid());
+//        return getSuccessResponseVO(null);
+//    }
 }

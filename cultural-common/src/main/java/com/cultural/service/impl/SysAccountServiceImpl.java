@@ -6,7 +6,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.cultural.entity.config.AppConfig;
 import com.cultural.entity.dto.SessionUserAdminDto;
+import com.cultural.entity.enums.MenuTypeEnum;
 import com.cultural.entity.enums.SysAccountStatusEnum;
 import com.cultural.entity.enums.UserStatusEnum;
 import com.cultural.entity.po.SysMenu;
@@ -15,6 +17,7 @@ import com.cultural.entity.vo.SysMenuVO;
 import com.cultural.exception.BusinessException;
 import com.cultural.service.SysMenuService;
 import com.cultural.utils.CopyTools;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import com.cultural.entity.enums.PageSize;
@@ -38,6 +41,8 @@ public class SysAccountServiceImpl implements SysAccountService {
 
     @Resource
     private SysMenuService sysMenuService;
+    @Resource
+    private AppConfig appConfig;
 
     /**
      * 根据条件查询列表
@@ -178,34 +183,51 @@ public class SysAccountServiceImpl implements SysAccountService {
         if (!sysAccount.getPassword().equals(password)) {
             throw new BusinessException("账号或密码错误！");
         }
-        // 查找菜单
-        SysMenuQuery query = new SysMenuQuery();
-        query.setFormate2Tree(false);
-        query.setOrderBy("sort asc");
-        List<SysMenu> sysMenus = sysMenuService.findListByParam(query);
 
-        // 权限编码
+        SessionUserAdminDto adminDto = new SessionUserAdminDto();
+
+        adminDto.setUserid(sysAccount.getUserId());
+        adminDto.setUserName(sysAccount.getUserName());
+
+
+        List<SysMenu> allMenus;
+        if (!StringTools.isEmpty(appConfig.getSuperAdminPhones()) && ArrayUtils.contains(appConfig.getSuperAdminPhones().split(","), phone)) {
+            adminDto.setSuperAdmin(true);
+
+            SysMenuQuery query = new SysMenuQuery();
+            query.setFormate2Tree(false);
+            query.setOrderBy("sort asc");
+            allMenus = sysMenuService.findListByParam(query);
+        } else {
+            adminDto.setSuperAdmin(false);
+            /** 不是超级管理：根据角色来查菜单 */
+            allMenus = sysMenuService.getAllMenuByRoleIds(sysAccount.getRoles());
+        }
         List<String> permissionCodeList = new ArrayList<>();
-        sysMenus.forEach(item -> {
-           permissionCodeList.add(item.getPermission());
-        });
 
-        sysMenus = sysMenuService.convertLine2Tree4Menu(sysMenus,0);
+        List<SysMenu> menuList = new ArrayList<>();
+        for (SysMenu sysMenu : allMenus) {
+            if (MenuTypeEnum.MENU.getType().equals(sysMenu.getMenuType())) {
+                menuList.add(sysMenu);
+            }
+            permissionCodeList.add(sysMenu.getPermission());
+        }
+
+        menuList = sysMenuService.convertLine2Tree4Menu(menuList, 0);
+
+        if (menuList.isEmpty()) {
+            throw new BusinessException("请联系管理员分配角色");
+        }
+
         List<SysMenuVO> menuVOList = new ArrayList<>();
-
-
-        sysMenus.forEach(item -> {
+        menuList.forEach(item -> {
             SysMenuVO menuVO = CopyTools.copy(item, SysMenuVO.class);
             menuVO.setChildren(CopyTools.copyList(item.getChildren(), SysMenuVO.class));
             menuVOList.add(menuVO);
         });
 
-        SessionUserAdminDto adminDto = new SessionUserAdminDto();
-        adminDto.setSuperAdmin(true);
-        adminDto.setUserid(sysAccount.getUserId());
-        adminDto.setUserName(sysAccount.getUserName());
-        adminDto.setMenuList(menuVOList); // 写入菜单项
-        adminDto.setPermissionCodeList(permissionCodeList); // 写入权限编码
+        adminDto.setMenuList(menuVOList);
+        adminDto.setPermissionCodeList(permissionCodeList);
         return adminDto;
     }
 
