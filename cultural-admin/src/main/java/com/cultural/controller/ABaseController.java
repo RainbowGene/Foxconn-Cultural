@@ -1,4 +1,6 @@
 package com.cultural.controller;
+import com.cultural.entity.constants.Constants;
+import com.cultural.entity.dto.SessionUserAdminDto;
 import com.cultural.entity.enums.ResponseCodeEnum;
 import com.cultural.entity.vo.ResponseVO;
 import com.cultural.exception.BusinessException;
@@ -43,8 +45,8 @@ public class ABaseController {
         return vo;
     }
 
-//    protected SessionUserAdminDto getUserAdminFromSession(HttpSession session) {
-//        SessionUserAdminDto sessionUserAdminDto = (SessionUserAdminDto) session.getAttribute(Constants.SESSION_KEY);
-//        return sessionUserAdminDto;
-//    }
+    protected SessionUserAdminDto getUserAdminFromSession(HttpSession session) {
+        SessionUserAdminDto sessionUserAdminDto = (SessionUserAdminDto) session.getAttribute(Constants.SESSION_KEY);
+        return sessionUserAdminDto;
+    }
 }

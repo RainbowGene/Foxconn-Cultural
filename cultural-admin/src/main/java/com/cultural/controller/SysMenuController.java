@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cultural.annotation.GlobalInterceptor;
 import com.cultural.annotation.VerifyParam;
+import com.cultural.entity.enums.PermissionCodeEnum;
 import com.cultural.entity.query.SysMenuQuery;
 import com.cultural.entity.po.SysMenu;
 import com.cultural.entity.vo.ResponseVO;
@@ -28,7 +29,7 @@ public class SysMenuController extends ABaseController {
      * 根据条件分页查询
      */
     @RequestMapping("/menuList")
-    @GlobalInterceptor
+    @GlobalInterceptor(permissionCode = PermissionCodeEnum.SETTINGS_MENU_LIST)
     public ResponseVO menuList() {
         SysMenuQuery query = new SysMenuQuery();
         query.setFormate2Tree(true);  // 需要格式化为tree
@@ -44,7 +45,7 @@ public class SysMenuController extends ABaseController {
      * @return
      */
     @RequestMapping("/saveMenu")
-    @GlobalInterceptor
+    @GlobalInterceptor(permissionCode = PermissionCodeEnum.SETTINGS_MENU_EDIT)
     public ResponseVO saveMenu(@VerifyParam SysMenu sysMenu) {
         sysMenuService.saveMenu(sysMenu);
         return getSuccessResponseVO(null);
@@ -56,7 +57,7 @@ public class SysMenuController extends ABaseController {
      * @return
      */
     @RequestMapping("/delMenu")
-    @GlobalInterceptor
+    @GlobalInterceptor(permissionCode = PermissionCodeEnum.SETTINGS_MENU_EDIT)
     public ResponseVO delMenu(@VerifyParam(required = true) Integer menuId) {
         sysMenuService.deleteSysMenuByMenuId(menuId);
         return getSuccessResponseVO(null);

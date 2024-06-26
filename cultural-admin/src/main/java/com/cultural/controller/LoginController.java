@@ -6,9 +6,11 @@ import com.cultural.entity.constants.Constants;
 import com.cultural.entity.dto.CreateImageCode;
 import com.cultural.entity.dto.SessionUserAdminDto;
 import com.cultural.entity.enums.VerifyRegexEnum;
+import com.cultural.entity.po.SysAccount;
 import com.cultural.entity.vo.ResponseVO;
 import com.cultural.exception.BusinessException;
 import com.cultural.service.SysAccountService;
+import com.cultural.utils.StringTools;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,14 +84,14 @@ public class LoginController extends ABaseController {
      * @param session
      * @return
      */
-//    @RequestMapping("/updateMyPwd")
-//    @GlobalInterceptor
-//    public ResponseVO updateMyPwd(HttpSession session,
-//                                  @VerifyParam(required = true, regex = VerifyRegexEnum.PASSWORD) String password) {
-//        SessionUserAdminDto userAdminDto = getUserAdminFromSession(session);
-//        SysAccount sysAccount = new SysAccount();
-//        sysAccount.setPassword(StringTools.encodeByMD5(password));
-//        sysAccountService.updateSysAccountByUserId(sysAccount, userAdminDto.getUserid());
-//        return getSuccessResponseVO(null);
-//    }
+    @RequestMapping("/updateMyPwd")
+    @GlobalInterceptor
+    public ResponseVO updateMyPwd(HttpSession session,
+                                  @VerifyParam(required = true, regex = VerifyRegexEnum.PASSWORD) String password) {
+        SessionUserAdminDto userAdminDto = getUserAdminFromSession(session);
+        SysAccount sysAccount = new SysAccount();
+        sysAccount.setPassword(StringTools.encodeByMD5(password));
+        sysAccountService.updateSysAccountByUserId(sysAccount, userAdminDto.getUserid());
+        return getSuccessResponseVO(null);
+    }
 }
