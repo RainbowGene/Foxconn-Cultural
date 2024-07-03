@@ -42,7 +42,8 @@ public class SysAccountController extends ABaseController {
     @GlobalInterceptor(permissionCode = PermissionCodeEnum.SETTINGS_ACCOUNT_LIST)
     public ResponseVO loadDataList(SysAccountQuery query) {
         query.setOrderBy("create_time desc");
-        query.setQueryRoles(true);
+        query.setQueryRoles(true);  // 查出角色集合
+        query.setHideAdmin(true);  // 隐藏超管信息
         return getSuccessResponseVO(sysAccountService.findListByPage(query));
     }
 

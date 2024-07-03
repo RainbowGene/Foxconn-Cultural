@@ -116,6 +116,9 @@
 		</if>
 		FROM sys_account
 		<include refid="query_condition"/>
+		<if test="query.hideAdmin!=null and query.hideAdmin">
+		    where roles is not null
+		</if>
 		<if test="query.orderBy!=null">
 			order by ${query.orderBy}
 		</if>

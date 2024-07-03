@@ -26,7 +26,6 @@ public class SysAccount implements Serializable {
 	/**
 	 * 电话号码
 	 */
-	@JsonIgnore
 	@VerifyParam(required = true, regex = VerifyRegexEnum.PHONE)
 	private String phone;
 

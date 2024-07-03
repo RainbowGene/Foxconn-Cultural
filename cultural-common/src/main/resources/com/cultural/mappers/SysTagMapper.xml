@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cultural.mappers.SysTagMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.cultural.entity.po.SysTag">
+		<!--标签id-->
+		<result column="tag_id" property="tagId"  />
+		<!--标签名-->
+		<result column="tag_name" property="tagName"  />
+		<!--标签类别-->
+		<result column="tag_type" property="tagType"  />
+		<!--标签颜色-->
+		<result column="tag_color" property="tagColor"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--最后一次修改时间-->
+		<result column="last_update_time" property="lastUpdateTime"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 tag_id,tag_name,tag_type,tag_color,create_time,
+		 last_update_time
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.tagId != null">
+				 and  tag_id = #{query.tagId}
+			</if>
+			<if test="query.tagName != null and query.tagName!=''">
+				 and  tag_name = #{query.tagName}
+			</if>
+			<if test="query.tagType != null">
+				 and  tag_type = #{query.tagType}
+			</if>
+			<if test="query.tagColor != null and query.tagColor!=''">
+				 and  tag_color = #{query.tagColor}
+			</if>
+			<if test="query.createTime != null and query.createTime!=''">
+				 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.lastUpdateTime != null and query.lastUpdateTime!=''">
+				 <![CDATA[ and  last_update_time=str_to_date(#{query.lastUpdateTime}, '%Y-%m-%d') ]]>
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.tagNameFuzzy!= null  and query.tagNameFuzzy!=''">
+				 and  tag_name like concat('%', #{query.tagNameFuzzy}, '%')
+			</if>
+			<if test="query.tagColorFuzzy!= null  and query.tagColorFuzzy!=''">
+				 and  tag_color like concat('%', #{query.tagColorFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.lastUpdateTimeStart!= null and query.lastUpdateTimeStart!=''">
+				 <![CDATA[ and  last_update_time>=str_to_date(#{query.lastUpdateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.lastUpdateTimeEnd!= null and query.lastUpdateTimeEnd!=''">
+				 <![CDATA[ and  last_update_time< date_sub(str_to_date(#{query.lastUpdateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sys_tag <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sys_tag <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.cultural.entity.po.SysTag">
+		 INSERT INTO sys_tag
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.tagId != null">
+				 tag_id,
+			</if>
+			<if test="bean.tagName != null">
+				 tag_name,
+			</if>
+			<if test="bean.tagType != null">
+				 tag_type,
+			</if>
+			<if test="bean.tagColor != null">
+				 tag_color,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.tagId!=null">
+				 #{bean.tagId},
+			</if>
+			<if test="bean.tagName!=null">
+				 #{bean.tagName},
+			</if>
+			<if test="bean.tagType!=null">
+				 #{bean.tagType},
+			</if>
+			<if test="bean.tagColor!=null">
+				 #{bean.tagColor},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.cultural.entity.po.SysTag">
+		 INSERT INTO sys_tag
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.tagId != null">
+				 tag_id,
+			</if>
+			<if test="bean.tagName != null">
+				 tag_name,
+			</if>
+			<if test="bean.tagType != null">
+				 tag_type,
+			</if>
+			<if test="bean.tagColor != null">
+				 tag_color,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.tagId!=null">
+				 #{bean.tagId},
+			</if>
+			<if test="bean.tagName!=null">
+				 #{bean.tagName},
+			</if>
+			<if test="bean.tagType!=null">
+				 #{bean.tagType},
+			</if>
+			<if test="bean.tagColor!=null">
+				 #{bean.tagColor},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.tagId!=null">
+				 tag_id = VALUES(tag_id),
+			</if>
+			<if test="bean.tagName!=null">
+				 tag_name = VALUES(tag_name),
+			</if>
+			<if test="bean.tagType!=null">
+				 tag_type = VALUES(tag_type),
+			</if>
+			<if test="bean.tagColor!=null">
+				 tag_color = VALUES(tag_color),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 last_update_time = VALUES(last_update_time),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.cultural.entity.po.SysTag">
+		 INSERT INTO sys_tag(
+			 tag_id,
+			 tag_name,
+			 tag_type,
+			 tag_color,
+			 create_time,
+			 last_update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.tagId},
+				 #{item.tagName},
+				 #{item.tagType},
+				 #{item.tagColor},
+				 #{item.createTime},
+				 #{item.lastUpdateTime}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.cultural.entity.po.SysTag">
+		 INSERT INTO sys_tag(
+			 tag_id,
+			 tag_name,
+			 tag_type,
+			 tag_color,
+			 create_time,
+			 last_update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.tagId},
+				 #{item.tagName},
+				 #{item.tagType},
+				 #{item.tagColor},
+				 #{item.createTime},
+				 #{item.lastUpdateTime}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			tag_id = VALUES(tag_id),
+			tag_name = VALUES(tag_name),
+			tag_type = VALUES(tag_type),
+			tag_color = VALUES(tag_color),
+			create_time = VALUES(create_time),
+			last_update_time = VALUES(last_update_time)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.cultural.entity.query.SysTagQuery">
+		 UPDATE sys_tag
+ 		 <set> 
+			<if test="bean.tagId != null">
+				 tag_id = #{bean.tagId},
+			</if>
+			<if test="bean.tagName != null">
+				 tag_name = #{bean.tagName},
+			</if>
+			<if test="bean.tagType != null">
+				 tag_type = #{bean.tagType},
+			</if>
+			<if test="bean.tagColor != null">
+				 tag_color = #{bean.tagColor},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sys_tag
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据TagId修改-->
+	<update id="updateByTagId" parameterType="com.cultural.entity.po.SysTag">
+		 UPDATE sys_tag
+ 		 <set> 
+			<if test="bean.tagName != null">
+				 tag_name = #{bean.tagName},
+			</if>
+			<if test="bean.tagType != null">
+				 tag_type = #{bean.tagType},
+			</if>
+			<if test="bean.tagColor != null">
+				 tag_color = #{bean.tagColor},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+ 		 </set>
+ 		 where tag_id=#{tagId}
+	</update>
+
+	<!-- 根据TagId删除-->
+	<delete id="deleteByTagId">
+		delete from sys_tag where tag_id=#{tagId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByTagId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_tag where tag_id=#{tagId}
+	</select>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByTagName" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_tag where tag_name=#{tagName}
+	</select>
+</mapper>

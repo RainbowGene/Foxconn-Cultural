@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cultural.mappers.SysColumnMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.cultural.entity.po.SysColumn">
+		<!--栏目id-->
+		<id column="column_id" property="columnId"  />
+		<!--栏目名-->
+		<result column="column_name" property="columnName"  />
+		<!--排序-->
+		<result column="sort" property="sort"  />
+		<!--图标-->
+		<result column="icon_path" property="iconPath"  />
+		<!--背景颜色-->
+		<result column="bg_color" property="bgColor"  />
+		<!--栏目封面-->
+		<result column="column_cover" property="columnCover"  />
+		<!--父极栏目:0 根节点-->
+		<result column="p_id" property="pId"  />
+		<!--栏目类型:0 普通栏目 1 广告页栏目 2 链接栏目-->
+		<result column="type" property="type"  />
+		<!--跳转地址:文章列表/布幅图片地址/友链-->
+		<result column="column_url" property="columnUrl"  />
+		<!--栏目状态:0 禁用 1 启用-->
+		<result column="status" property="status"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 column_id,column_name,sort,icon_path,bg_color,
+		 column_cover,p_id,type,column_url,status
+		 
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.columnId != null">
+				 and  column_id = #{query.columnId}
+			</if>
+			<if test="query.columnName != null and query.columnName!=''">
+				 and  column_name = #{query.columnName}
+			</if>
+			<if test="query.sort != null">
+				 and  sort = #{query.sort}
+			</if>
+			<if test="query.iconPath != null and query.iconPath!=''">
+				 and  icon_path = #{query.iconPath}
+			</if>
+			<if test="query.bgColor != null and query.bgColor!=''">
+				 and  bg_color = #{query.bgColor}
+			</if>
+			<if test="query.columnCover != null and query.columnCover!=''">
+				 and  column_cover = #{query.columnCover}
+			</if>
+			<if test="query.pId != null">
+				 and  p_id = #{query.pId}
+			</if>
+			<if test="query.type != null">
+				 and  type = #{query.type}
+			</if>
+			<if test="query.columnUrl != null and query.columnUrl!=''">
+				 and  column_url = #{query.columnUrl}
+			</if>
+			<if test="query.status != null">
+				 and  status = #{query.status}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.columnNameFuzzy!= null  and query.columnNameFuzzy!=''">
+				 and  column_name like concat('%', #{query.columnNameFuzzy}, '%')
+			</if>
+			<if test="query.iconPathFuzzy!= null  and query.iconPathFuzzy!=''">
+				 and  icon_path like concat('%', #{query.iconPathFuzzy}, '%')
+			</if>
+			<if test="query.bgColorFuzzy!= null  and query.bgColorFuzzy!=''">
+				 and  bg_color like concat('%', #{query.bgColorFuzzy}, '%')
+			</if>
+			<if test="query.columnCoverFuzzy!= null  and query.columnCoverFuzzy!=''">
+				 and  column_cover like concat('%', #{query.columnCoverFuzzy}, '%')
+			</if>
+			<if test="query.columnUrlFuzzy!= null  and query.columnUrlFuzzy!=''">
+				 and  column_url like concat('%', #{query.columnUrlFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sys_column <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sys_column <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.cultural.entity.po.SysColumn">
+		<selectKey keyProperty="bean.columnId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO sys_column
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.columnName != null">
+				 column_name,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+			<if test="bean.iconPath != null">
+				 icon_path,
+			</if>
+			<if test="bean.bgColor != null">
+				 bg_color,
+			</if>
+			<if test="bean.columnCover != null">
+				 column_cover,
+			</if>
+			<if test="bean.pId != null">
+				 p_id,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.columnUrl != null">
+				 column_url,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.columnName!=null">
+				 #{bean.columnName},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+			<if test="bean.iconPath!=null">
+				 #{bean.iconPath},
+			</if>
+			<if test="bean.bgColor!=null">
+				 #{bean.bgColor},
+			</if>
+			<if test="bean.columnCover!=null">
+				 #{bean.columnCover},
+			</if>
+			<if test="bean.pId!=null">
+				 #{bean.pId},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.columnUrl!=null">
+				 #{bean.columnUrl},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.cultural.entity.po.SysColumn">
+		 INSERT INTO sys_column
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.columnId != null">
+				 column_id,
+			</if>
+			<if test="bean.columnName != null">
+				 column_name,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+			<if test="bean.iconPath != null">
+				 icon_path,
+			</if>
+			<if test="bean.bgColor != null">
+				 bg_color,
+			</if>
+			<if test="bean.columnCover != null">
+				 column_cover,
+			</if>
+			<if test="bean.pId != null">
+				 p_id,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.columnUrl != null">
+				 column_url,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.columnId!=null">
+				 #{bean.columnId},
+			</if>
+			<if test="bean.columnName!=null">
+				 #{bean.columnName},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+			<if test="bean.iconPath!=null">
+				 #{bean.iconPath},
+			</if>
+			<if test="bean.bgColor!=null">
+				 #{bean.bgColor},
+			</if>
+			<if test="bean.columnCover!=null">
+				 #{bean.columnCover},
+			</if>
+			<if test="bean.pId!=null">
+				 #{bean.pId},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.columnUrl!=null">
+				 #{bean.columnUrl},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.columnName!=null">
+				 column_name = VALUES(column_name),
+			</if>
+			<if test="bean.sort!=null">
+				 sort = VALUES(sort),
+			</if>
+			<if test="bean.iconPath!=null">
+				 icon_path = VALUES(icon_path),
+			</if>
+			<if test="bean.bgColor!=null">
+				 bg_color = VALUES(bg_color),
+			</if>
+			<if test="bean.columnCover!=null">
+				 column_cover = VALUES(column_cover),
+			</if>
+			<if test="bean.pId!=null">
+				 p_id = VALUES(p_id),
+			</if>
+			<if test="bean.type!=null">
+				 type = VALUES(type),
+			</if>
+			<if test="bean.columnUrl!=null">
+				 column_url = VALUES(column_url),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.cultural.entity.po.SysColumn" useGeneratedKeys="true" keyProperty="columnId">
+		 INSERT INTO sys_column(
+			 column_name,
+			 sort,
+			 icon_path,
+			 bg_color,
+			 column_cover,
+			 p_id,
+			 type,
+			 column_url,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.columnName},
+				 #{item.sort},
+				 #{item.iconPath},
+				 #{item.bgColor},
+				 #{item.columnCover},
+				 #{item.pId},
+				 #{item.type},
+				 #{item.columnUrl},
+				 #{item.status}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.cultural.entity.po.SysColumn">
+		 INSERT INTO sys_column(
+			 column_name,
+			 sort,
+			 icon_path,
+			 bg_color,
+			 column_cover,
+			 p_id,
+			 type,
+			 column_url,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.columnName},
+				 #{item.sort},
+				 #{item.iconPath},
+				 #{item.bgColor},
+				 #{item.columnCover},
+				 #{item.pId},
+				 #{item.type},
+				 #{item.columnUrl},
+				 #{item.status}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			column_name = VALUES(column_name),
+			sort = VALUES(sort),
+			icon_path = VALUES(icon_path),
+			bg_color = VALUES(bg_color),
+			column_cover = VALUES(column_cover),
+			p_id = VALUES(p_id),
+			type = VALUES(type),
+			column_url = VALUES(column_url),
+			status = VALUES(status)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.cultural.entity.query.SysColumnQuery">
+		 UPDATE sys_column
+ 		 <set> 
+			<if test="bean.columnName != null">
+				 column_name = #{bean.columnName},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+			<if test="bean.iconPath != null">
+				 icon_path = #{bean.iconPath},
+			</if>
+			<if test="bean.bgColor != null">
+				 bg_color = #{bean.bgColor},
+			</if>
+			<if test="bean.columnCover != null">
+				 column_cover = #{bean.columnCover},
+			</if>
+			<if test="bean.pId != null">
+				 p_id = #{bean.pId},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.columnUrl != null">
+				 column_url = #{bean.columnUrl},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sys_column
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据ColumnId修改-->
+	<update id="updateByColumnId" parameterType="com.cultural.entity.po.SysColumn">
+		 UPDATE sys_column
+ 		 <set> 
+			<if test="bean.columnName != null">
+				 column_name = #{bean.columnName},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+			<if test="bean.iconPath != null">
+				 icon_path = #{bean.iconPath},
+			</if>
+			<if test="bean.bgColor != null">
+				 bg_color = #{bean.bgColor},
+			</if>
+			<if test="bean.columnCover != null">
+				 column_cover = #{bean.columnCover},
+			</if>
+			<if test="bean.pId != null">
+				 p_id = #{bean.pId},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.columnUrl != null">
+				 column_url = #{bean.columnUrl},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 where column_id=#{columnId}
+	</update>
+
+	<!-- 根据ColumnId删除-->
+	<delete id="deleteByColumnId">
+		delete from sys_column where column_id=#{columnId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByColumnId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_column where column_id=#{columnId}
+	</select>
+
+	<!-- 增加栏目 -->
+	<update id="updateColumnName">
+		update sys_column
+		set column_name = #{columnName}
+		where column_id = #{columnId};
+	</update>
+</mapper>

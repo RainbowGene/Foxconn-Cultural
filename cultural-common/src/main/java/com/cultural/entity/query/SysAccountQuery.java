@@ -77,7 +77,23 @@ public class SysAccountQuery extends BaseParam {
 
 	private String emailFuzzy;
 
+	/**
+	 * 是否查询角色集合
+	 */
 	private Boolean queryRoles;
+
+	/**
+	 * 是否隐藏超管信息
+	 */
+	private Boolean hideAdmin;
+
+	public Boolean getHideAdmin() {
+		return hideAdmin;
+	}
+
+	public void setHideAdmin(Boolean hideAdmin) {
+		this.hideAdmin = hideAdmin;
+	}
 
 	public Boolean getQueryRoles() {
 		return queryRoles;

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cultural.mappers.SysAreaMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.cultural.entity.po.SysArea">
+		<!--地区id-->
+		<id column="area_id" property="areaId"  />
+		<!--地区名-->
+		<result column="area_name" property="areaName"  />
+		<!--所属地区-->
+		<result column="p_id" property="pId"  />
+		<!--地区简介-->
+		<result column="area_des" property="areaDes"  />
+		<!--介绍图片-->
+		<result column="img_url" property="imgUrl"  />
+		<!--0 地区 1 城市 2园区 3事业群-->
+		<result column="type" property="type"  />
+		<!--排序-->
+		<result column="sort" property="sort"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 area_id,area_name,p_id,area_des,img_url,
+		 type,sort
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.areaId != null">
+				 and  area_id = #{query.areaId}
+			</if>
+			<if test="query.areaName != null and query.areaName!=''">
+				 and  area_name = #{query.areaName}
+			</if>
+			<if test="query.pId != null">
+				 and  p_id = #{query.pId}
+			</if>
+			<if test="query.areaDes != null and query.areaDes!=''">
+				 and  area_des = #{query.areaDes}
+			</if>
+			<if test="query.imgUrl != null and query.imgUrl!=''">
+				 and  img_url = #{query.imgUrl}
+			</if>
+			<if test="query.type != null">
+				 and  type = #{query.type}
+			</if>
+			<if test="query.sort != null">
+				 and  sort = #{query.sort}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.areaNameFuzzy!= null  and query.areaNameFuzzy!=''">
+				 and  area_name like concat('%', #{query.areaNameFuzzy}, '%')
+			</if>
+			<if test="query.areaDesFuzzy!= null  and query.areaDesFuzzy!=''">
+				 and  area_des like concat('%', #{query.areaDesFuzzy}, '%')
+			</if>
+			<if test="query.imgUrlFuzzy!= null  and query.imgUrlFuzzy!=''">
+				 and  img_url like concat('%', #{query.imgUrlFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sys_area <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sys_area <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.cultural.entity.po.SysArea">
+		<selectKey keyProperty="bean.areaId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO sys_area
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.areaName != null">
+				 area_name,
+			</if>
+			<if test="bean.pId != null">
+				 p_id,
+			</if>
+			<if test="bean.areaDes != null">
+				 area_des,
+			</if>
+			<if test="bean.imgUrl != null">
+				 img_url,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.areaName!=null">
+				 #{bean.areaName},
+			</if>
+			<if test="bean.pId!=null">
+				 #{bean.pId},
+			</if>
+			<if test="bean.areaDes!=null">
+				 #{bean.areaDes},
+			</if>
+			<if test="bean.imgUrl!=null">
+				 #{bean.imgUrl},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.cultural.entity.po.SysArea">
+		 INSERT INTO sys_area
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.areaId != null">
+				 area_id,
+			</if>
+			<if test="bean.areaName != null">
+				 area_name,
+			</if>
+			<if test="bean.pId != null">
+				 p_id,
+			</if>
+			<if test="bean.areaDes != null">
+				 area_des,
+			</if>
+			<if test="bean.imgUrl != null">
+				 img_url,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.areaId!=null">
+				 #{bean.areaId},
+			</if>
+			<if test="bean.areaName!=null">
+				 #{bean.areaName},
+			</if>
+			<if test="bean.pId!=null">
+				 #{bean.pId},
+			</if>
+			<if test="bean.areaDes!=null">
+				 #{bean.areaDes},
+			</if>
+			<if test="bean.imgUrl!=null">
+				 #{bean.imgUrl},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.areaName!=null">
+				 area_name = VALUES(area_name),
+			</if>
+			<if test="bean.pId!=null">
+				 p_id = VALUES(p_id),
+			</if>
+			<if test="bean.areaDes!=null">
+				 area_des = VALUES(area_des),
+			</if>
+			<if test="bean.imgUrl!=null">
+				 img_url = VALUES(img_url),
+			</if>
+			<if test="bean.type!=null">
+				 type = VALUES(type),
+			</if>
+			<if test="bean.sort!=null">
+				 sort = VALUES(sort),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.cultural.entity.po.SysArea" useGeneratedKeys="true" keyProperty="areaId">
+		 INSERT INTO sys_area(
+			 area_name,
+			 p_id,
+			 area_des,
+			 img_url,
+			 type,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.areaName},
+				 #{item.pId},
+				 #{item.areaDes},
+				 #{item.imgUrl},
+				 #{item.type},
+				 #{item.sort}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.cultural.entity.po.SysArea">
+		 INSERT INTO sys_area(
+			 area_name,
+			 p_id,
+			 area_des,
+			 img_url,
+			 type,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.areaName},
+				 #{item.pId},
+				 #{item.areaDes},
+				 #{item.imgUrl},
+				 #{item.type},
+				 #{item.sort}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			area_name = VALUES(area_name),
+			p_id = VALUES(p_id),
+			area_des = VALUES(area_des),
+			img_url = VALUES(img_url),
+			type = VALUES(type),
+			sort = VALUES(sort)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.cultural.entity.query.SysAreaQuery">
+		 UPDATE sys_area
+ 		 <set> 
+			<if test="bean.areaName != null">
+				 area_name = #{bean.areaName},
+			</if>
+			<if test="bean.pId != null">
+				 p_id = #{bean.pId},
+			</if>
+			<if test="bean.areaDes != null">
+				 area_des = #{bean.areaDes},
+			</if>
+			<if test="bean.imgUrl != null">
+				 img_url = #{bean.imgUrl},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sys_area
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据AreaId修改-->
+	<update id="updateByAreaId" parameterType="com.cultural.entity.po.SysArea">
+		 UPDATE sys_area
+ 		 <set> 
+			<if test="bean.areaName != null">
+				 area_name = #{bean.areaName},
+			</if>
+			<if test="bean.pId != null">
+				 p_id = #{bean.pId},
+			</if>
+			<if test="bean.areaDes != null">
+				 area_des = #{bean.areaDes},
+			</if>
+			<if test="bean.imgUrl != null">
+				 img_url = #{bean.imgUrl},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 where area_id=#{areaId}
+	</update>
+
+	<!-- 根据AreaId删除-->
+	<delete id="deleteByAreaId">
+		delete from sys_area where area_id=#{areaId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByAreaId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_area where area_id=#{areaId}
+	</select>
+
+</mapper>
