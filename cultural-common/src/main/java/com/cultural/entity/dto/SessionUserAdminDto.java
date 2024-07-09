@@ -23,6 +23,16 @@ public class SessionUserAdminDto implements Serializable {
 
     private List<String> permissionCodeList;
 
+    private String province;
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
     public Integer getUserid() {
         return userid;
     }

@@ -180,4 +180,64 @@ public class FileController extends ABaseController {
             }
         }
     }
+
+    /**
+     * 读取pdf
+     * @param pdfFolder
+     * @param pdfName
+     * @param response
+     */
+    @RequestMapping("/getPdf/{pdfFolder}/{pdfName}")
+    @GlobalInterceptor
+    public void readPdf(@PathVariable("pdfFolder") String pdfFolder, @PathVariable("pdfName") String pdfName, HttpServletResponse response) {
+        ServletOutputStream sos = null;
+        FileInputStream in = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (StringTools.isEmpty(pdfFolder) || StringUtils.isBlank(pdfName)) {
+                return;
+            }
+            String pdfSuffix = StringTools.getFileSuffix(pdfName);
+            String filePath = adminConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + Constants.FILE_FOLDER_PDF + pdfFolder + "/" + pdfName;
+            File pdfFile = new File(filePath);
+            if (!pdfFile.exists()) {
+                return;
+            }
+            pdfSuffix = pdfSuffix.replace(".", "");
+            response.setHeader("Cache-Control", "max-age=2592000");
+            response.setContentType("application/pdf");
+            in = new FileInputStream(pdfFile);
+            sos = response.getOutputStream();
+            baos = new ByteArrayOutputStream();
+            int ch = 0;
+            while (-1 != (ch = in.read())) {
+                baos.write(ch);
+            }
+            sos.write(baos.toByteArray());
+        } catch (Exception e) {
+            logger.error("读取PDF文件异常", e);
+        } finally {
+            if (baos != null) {
+                try {
+                    baos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (sos != null) {
+                try {
+                    sos.close();
+                } catch (IOException e) {
+                    logger.error("IO异常", e);
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    logger.error("IO异常", e);
+                }
+            }
+        }
+    }
 }

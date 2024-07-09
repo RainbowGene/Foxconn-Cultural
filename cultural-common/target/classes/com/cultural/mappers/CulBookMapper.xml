@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cultural.mappers.CulBookMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.cultural.entity.po.CulBook">
+		<!--电子书id-->
+		<id column="book_id" property="bookId"  />
+		<!--电子书名-->
+		<result column="book_name" property="bookName"  />
+		<!--所属栏目id-->
+		<result column="column_id" property="columnId"  />
+		<!--所属栏目名-->
+		<result column="column_name" property="columnName"  />
+		<!--封面-->
+		<result column="cover" property="cover"  />
+		<!--标签组-->
+		<result column="tags" property="tags"  />
+		<!--摘要-->
+		<result column="summary" property="summary"  />
+		<!--上传时间-->
+		<result column="post_time" property="postTime"  />
+		<!--上传地址-->
+		<result column="book_url" property="bookUrl"  />
+		<!--最后一次修改时间-->
+		<result column="last_update_time" property="lastUpdateTime"  />
+		<!--阅读数-->
+		<result column="read_count" property="readCount"  />
+		<!--点赞数-->
+		<result column="like_count" property="likeCount"  />
+		<!--0 不置顶 1 置顶-->
+		<result column="top_type" property="topType"  />
+		<!--0 屏蔽 1 展示 -1 已删-->
+		<result column="status" property="status"  />
+		<!--发布人id-->
+		<result column="user_id" property="userId"  />
+		<!--发布人-->
+		<result column="user_name" property="userName"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 book_id,book_name,column_id,column_name,cover,
+		 tags,summary,post_time,book_url,last_update_time,
+		 read_count,like_count,top_type,status,user_id,
+		 user_name
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.bookId != null">
+				 and  book_id = #{query.bookId}
+			</if>
+			<if test="query.bookName != null and query.bookName!=''">
+				 and  book_name = #{query.bookName}
+			</if>
+			<if test="query.columnId != null">
+				 and  column_id = #{query.columnId}
+			</if>
+			<if test="query.columnName != null and query.columnName!=''">
+				 and  column_name = #{query.columnName}
+			</if>
+			<if test="query.cover != null and query.cover!=''">
+				 and  cover = #{query.cover}
+			</if>
+			<if test="query.tags != null and query.tags!=''">
+				 and  tags = #{query.tags}
+			</if>
+			<if test="query.summary != null and query.summary!=''">
+				 and  summary = #{query.summary}
+			</if>
+			<if test="query.postTime != null and query.postTime!=''">
+				 <![CDATA[ and  post_time=str_to_date(#{query.postTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.bookUrl != null and query.bookUrl!=''">
+				 and  book_url = #{query.bookUrl}
+			</if>
+			<if test="query.lastUpdateTime != null and query.lastUpdateTime!=''">
+				 <![CDATA[ and  last_update_time=str_to_date(#{query.lastUpdateTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.readCount != null">
+				 and  read_count = #{query.readCount}
+			</if>
+			<if test="query.likeCount != null">
+				 and  like_count = #{query.likeCount}
+			</if>
+			<if test="query.topType != null">
+				 and  top_type = #{query.topType}
+			</if>
+			<if test="query.status != null">
+				 and  status = #{query.status}
+			</if>
+			<if test="query.userId != null">
+				 and  user_id = #{query.userId}
+			</if>
+			<if test="query.userName != null and query.userName!=''">
+				 and  user_name = #{query.userName}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.bookNameFuzzy!= null  and query.bookNameFuzzy!=''">
+				 and  book_name like concat('%', #{query.bookNameFuzzy}, '%')
+			</if>
+			<if test="query.columnNameFuzzy!= null  and query.columnNameFuzzy!=''">
+				 and  column_name like concat('%', #{query.columnNameFuzzy}, '%')
+			</if>
+			<if test="query.coverFuzzy!= null  and query.coverFuzzy!=''">
+				 and  cover like concat('%', #{query.coverFuzzy}, '%')
+			</if>
+			<if test="query.tagsFuzzy!= null  and query.tagsFuzzy!=''">
+				 and  tags like concat('%', #{query.tagsFuzzy}, '%')
+			</if>
+			<if test="query.summaryFuzzy!= null  and query.summaryFuzzy!=''">
+				 and  summary like concat('%', #{query.summaryFuzzy}, '%')
+			</if>
+			<if test="query.postTimeStart!= null and query.postTimeStart!=''">
+				 <![CDATA[ and  post_time>=str_to_date(#{query.postTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.postTimeEnd!= null and query.postTimeEnd!=''">
+				 <![CDATA[ and  post_time< date_sub(str_to_date(#{query.postTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.bookUrlFuzzy!= null  and query.bookUrlFuzzy!=''">
+				 and  book_url like concat('%', #{query.bookUrlFuzzy}, '%')
+			</if>
+			<if test="query.lastUpdateTimeStart!= null and query.lastUpdateTimeStart!=''">
+				 <![CDATA[ and  last_update_time>=str_to_date(#{query.lastUpdateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.lastUpdateTimeEnd!= null and query.lastUpdateTimeEnd!=''">
+				 <![CDATA[ and  last_update_time< date_sub(str_to_date(#{query.lastUpdateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.userNameFuzzy!= null  and query.userNameFuzzy!=''">
+				 and  user_name like concat('%', #{query.userNameFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM cul_book <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM cul_book <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.cultural.entity.po.CulBook">
+		<selectKey keyProperty="bean.bookId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO cul_book
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.bookName != null">
+				 book_name,
+			</if>
+			<if test="bean.columnId != null">
+				 column_id,
+			</if>
+			<if test="bean.columnName != null">
+				 column_name,
+			</if>
+			<if test="bean.cover != null">
+				 cover,
+			</if>
+			<if test="bean.tags != null">
+				 tags,
+			</if>
+			<if test="bean.summary != null">
+				 summary,
+			</if>
+			<if test="bean.postTime != null">
+				 post_time,
+			</if>
+			<if test="bean.bookUrl != null">
+				 book_url,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+			<if test="bean.readCount != null">
+				 read_count,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.topType != null">
+				 top_type,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.userName != null">
+				 user_name,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.bookName!=null">
+				 #{bean.bookName},
+			</if>
+			<if test="bean.columnId!=null">
+				 #{bean.columnId},
+			</if>
+			<if test="bean.columnName!=null">
+				 #{bean.columnName},
+			</if>
+			<if test="bean.cover!=null">
+				 #{bean.cover},
+			</if>
+			<if test="bean.tags!=null">
+				 #{bean.tags},
+			</if>
+			<if test="bean.summary!=null">
+				 #{bean.summary},
+			</if>
+			<if test="bean.postTime!=null">
+				 #{bean.postTime},
+			</if>
+			<if test="bean.bookUrl!=null">
+				 #{bean.bookUrl},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.readCount!=null">
+				 #{bean.readCount},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.topType!=null">
+				 #{bean.topType},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.userName!=null">
+				 #{bean.userName},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.cultural.entity.po.CulBook">
+		 INSERT INTO cul_book
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.bookId != null">
+				 book_id,
+			</if>
+			<if test="bean.bookName != null">
+				 book_name,
+			</if>
+			<if test="bean.columnId != null">
+				 column_id,
+			</if>
+			<if test="bean.columnName != null">
+				 column_name,
+			</if>
+			<if test="bean.cover != null">
+				 cover,
+			</if>
+			<if test="bean.tags != null">
+				 tags,
+			</if>
+			<if test="bean.summary != null">
+				 summary,
+			</if>
+			<if test="bean.postTime != null">
+				 post_time,
+			</if>
+			<if test="bean.bookUrl != null">
+				 book_url,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+			<if test="bean.readCount != null">
+				 read_count,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.topType != null">
+				 top_type,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.userName != null">
+				 user_name,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.bookId!=null">
+				 #{bean.bookId},
+			</if>
+			<if test="bean.bookName!=null">
+				 #{bean.bookName},
+			</if>
+			<if test="bean.columnId!=null">
+				 #{bean.columnId},
+			</if>
+			<if test="bean.columnName!=null">
+				 #{bean.columnName},
+			</if>
+			<if test="bean.cover!=null">
+				 #{bean.cover},
+			</if>
+			<if test="bean.tags!=null">
+				 #{bean.tags},
+			</if>
+			<if test="bean.summary!=null">
+				 #{bean.summary},
+			</if>
+			<if test="bean.postTime!=null">
+				 #{bean.postTime},
+			</if>
+			<if test="bean.bookUrl!=null">
+				 #{bean.bookUrl},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.readCount!=null">
+				 #{bean.readCount},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.topType!=null">
+				 #{bean.topType},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.userName!=null">
+				 #{bean.userName},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.bookName!=null">
+				 book_name = VALUES(book_name),
+			</if>
+			<if test="bean.columnId!=null">
+				 column_id = VALUES(column_id),
+			</if>
+			<if test="bean.columnName!=null">
+				 column_name = VALUES(column_name),
+			</if>
+			<if test="bean.cover!=null">
+				 cover = VALUES(cover),
+			</if>
+			<if test="bean.tags!=null">
+				 tags = VALUES(tags),
+			</if>
+			<if test="bean.summary!=null">
+				 summary = VALUES(summary),
+			</if>
+			<if test="bean.postTime!=null">
+				 post_time = VALUES(post_time),
+			</if>
+			<if test="bean.bookUrl!=null">
+				 book_url = VALUES(book_url),
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 last_update_time = VALUES(last_update_time),
+			</if>
+			<if test="bean.readCount!=null">
+				 read_count = VALUES(read_count),
+			</if>
+			<if test="bean.likeCount!=null">
+				 like_count = VALUES(like_count),
+			</if>
+			<if test="bean.topType!=null">
+				 top_type = VALUES(top_type),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+			<if test="bean.userId!=null">
+				 user_id = VALUES(user_id),
+			</if>
+			<if test="bean.userName!=null">
+				 user_name = VALUES(user_name),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.cultural.entity.po.CulBook" useGeneratedKeys="true" keyProperty="bookId">
+		 INSERT INTO cul_book(
+			 book_name,
+			 column_id,
+			 column_name,
+			 cover,
+			 tags,
+			 summary,
+			 post_time,
+			 book_url,
+			 last_update_time,
+			 read_count,
+			 like_count,
+			 top_type,
+			 status,
+			 user_id,
+			 user_name
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.bookName},
+				 #{item.columnId},
+				 #{item.columnName},
+				 #{item.cover},
+				 #{item.tags},
+				 #{item.summary},
+				 #{item.postTime},
+				 #{item.bookUrl},
+				 #{item.lastUpdateTime},
+				 #{item.readCount},
+				 #{item.likeCount},
+				 #{item.topType},
+				 #{item.status},
+				 #{item.userId},
+				 #{item.userName}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.cultural.entity.po.CulBook">
+		 INSERT INTO cul_book(
+			 book_name,
+			 column_id,
+			 column_name,
+			 cover,
+			 tags,
+			 summary,
+			 post_time,
+			 book_url,
+			 last_update_time,
+			 read_count,
+			 like_count,
+			 top_type,
+			 status,
+			 user_id,
+			 user_name
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.bookName},
+				 #{item.columnId},
+				 #{item.columnName},
+				 #{item.cover},
+				 #{item.tags},
+				 #{item.summary},
+				 #{item.postTime},
+				 #{item.bookUrl},
+				 #{item.lastUpdateTime},
+				 #{item.readCount},
+				 #{item.likeCount},
+				 #{item.topType},
+				 #{item.status},
+				 #{item.userId},
+				 #{item.userName}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			book_name = VALUES(book_name),
+			column_id = VALUES(column_id),
+			column_name = VALUES(column_name),
+			cover = VALUES(cover),
+			tags = VALUES(tags),
+			summary = VALUES(summary),
+			post_time = VALUES(post_time),
+			book_url = VALUES(book_url),
+			last_update_time = VALUES(last_update_time),
+			read_count = VALUES(read_count),
+			like_count = VALUES(like_count),
+			top_type = VALUES(top_type),
+			status = VALUES(status),
+			user_id = VALUES(user_id),
+			user_name = VALUES(user_name)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.cultural.entity.query.CulBookQuery">
+		 UPDATE cul_book
+ 		 <set> 
+			<if test="bean.bookName != null">
+				 book_name = #{bean.bookName},
+			</if>
+			<if test="bean.columnId != null">
+				 column_id = #{bean.columnId},
+			</if>
+			<if test="bean.columnName != null">
+				 column_name = #{bean.columnName},
+			</if>
+			<if test="bean.cover != null">
+				 cover = #{bean.cover},
+			</if>
+			<if test="bean.tags != null">
+				 tags = #{bean.tags},
+			</if>
+			<if test="bean.summary != null">
+				 summary = #{bean.summary},
+			</if>
+			<if test="bean.postTime != null">
+				 post_time = #{bean.postTime},
+			</if>
+			<if test="bean.bookUrl != null">
+				 book_url = #{bean.bookUrl},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.readCount != null">
+				 read_count = #{bean.readCount},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.topType != null">
+				 top_type = #{bean.topType},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.userName != null">
+				 user_name = #{bean.userName},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from cul_book
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据BookId修改-->
+	<update id="updateByBookId" parameterType="com.cultural.entity.po.CulBook">
+		 UPDATE cul_book
+ 		 <set> 
+			<if test="bean.bookName != null">
+				 book_name = #{bean.bookName},
+			</if>
+			<if test="bean.columnId != null">
+				 column_id = #{bean.columnId},
+			</if>
+			<if test="bean.columnName != null">
+				 column_name = #{bean.columnName},
+			</if>
+			<if test="bean.cover != null">
+				 cover = #{bean.cover},
+			</if>
+			<if test="bean.tags != null">
+				 tags = #{bean.tags},
+			</if>
+			<if test="bean.summary != null">
+				 summary = #{bean.summary},
+			</if>
+			<if test="bean.postTime != null">
+				 post_time = #{bean.postTime},
+			</if>
+			<if test="bean.bookUrl != null">
+				 book_url = #{bean.bookUrl},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.readCount != null">
+				 read_count = #{bean.readCount},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.topType != null">
+				 top_type = #{bean.topType},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.userName != null">
+				 user_name = #{bean.userName},
+			</if>
+ 		 </set>
+ 		 where book_id=#{bookId}
+	</update>
+
+	<!-- 根据BookId删除-->
+	<delete id="deleteByBookId">
+		delete from cul_book where book_id=#{bookId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByBookId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from cul_book where book_id=#{bookId}
+	</select>
+
+</mapper>

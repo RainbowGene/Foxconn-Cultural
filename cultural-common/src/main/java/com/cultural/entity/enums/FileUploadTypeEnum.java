@@ -6,7 +6,8 @@ public enum FileUploadTypeEnum {
     ARTICLE_COVER("文章封面", Constants.IMAGE_SUFFIX),
     ARTICLE_ATTACHMENT("文章附件", new String[]{".zip", ".ZIP", ".rar", ".RAR"}),
     COMMENT_IMAGE("评论图片", Constants.IMAGE_SUFFIX),
-    AVATAR("个人头像", Constants.IMAGE_SUFFIX);
+    AVATAR("个人头像", Constants.IMAGE_SUFFIX),
+    BOOK_PDF("pdf电子书", new String[]{".PDF", ".pdf"});
 
 
     private String desc;

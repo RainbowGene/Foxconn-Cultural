@@ -20,15 +20,21 @@ public class Constants {
 
     public static final String FILE_FOLDER_TEMP_2 = "temp";
 
+    public static final String FILE_FOLDER_TEMP = "/temp/";
+
     public static final String FILE_FOLDER_ATTACHMENT = "attachment/";
 
     public static final String FILE_FOLDER_IMAGE = "images/";
+
+    public static final String FILE_FOLDER_PDF = "file/";
 
     public static final String READ_IMAGE_PATH = "/api/file/getImage/";
 
     public static final String FILE_FOLDER_AVATAR_NAME = "avatar/";
 
     public static final Integer FILE_SIZE_500KB = 1024 * 500;
+
+    public static final Integer FILE_SIZE_1M = 1024 * 1000;
 
     public static final String AVATAR_SUFFIX = ".jpg";
     public static final String AVATAR_DEFUALT = "default_avatar.jpg";
