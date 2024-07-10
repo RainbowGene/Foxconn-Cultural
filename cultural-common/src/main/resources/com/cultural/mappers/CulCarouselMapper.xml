@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cultural.mappers.CulCarouselMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.cultural.entity.po.CulCarousel">
+		<!--轮播图ID-->
+		<id column="carousel_id" property="carouselId"  />
+		<!--pc端轮播图地址-->
+		<result column="pc_img_url" property="pcImgUrl"  />
+		<!--移动端轮播图地址-->
+		<result column="app_img_url" property="appImgUrl"  />
+		<!--0 文章id 1 长图展示 2 外链-->
+		<result column="object_type" property="objectType"  />
+		<!--文章id-->
+		<result column="object_id" property="objectId"  />
+		<!--外部链接-->
+		<result column="outer_link" property="outerLink"  />
+		<!--排序-->
+		<result column="sort" property="sort"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 carousel_id,pc_img_url,app_img_url,object_type,object_id,
+		 outer_link,sort
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.carouselId != null">
+				 and  carousel_id = #{query.carouselId}
+			</if>
+			<if test="query.pcImgUrl != null and query.pcImgUrl!=''">
+				 and  pc_img_url = #{query.pcImgUrl}
+			</if>
+			<if test="query.appImgUrl != null and query.appImgUrl!=''">
+				 and  app_img_url = #{query.appImgUrl}
+			</if>
+			<if test="query.objectType != null">
+				 and  object_type = #{query.objectType}
+			</if>
+			<if test="query.objectId != null and query.objectId!=''">
+				 and  object_id = #{query.objectId}
+			</if>
+			<if test="query.outerLink != null and query.outerLink!=''">
+				 and  outer_link = #{query.outerLink}
+			</if>
+			<if test="query.sort != null">
+				 and  sort = #{query.sort}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.pcImgUrlFuzzy!= null  and query.pcImgUrlFuzzy!=''">
+				 and  pc_img_url like concat('%', #{query.pcImgUrlFuzzy}, '%')
+			</if>
+			<if test="query.appImgUrlFuzzy!= null  and query.appImgUrlFuzzy!=''">
+				 and  app_img_url like concat('%', #{query.appImgUrlFuzzy}, '%')
+			</if>
+			<if test="query.objectIdFuzzy!= null  and query.objectIdFuzzy!=''">
+				 and  object_id like concat('%', #{query.objectIdFuzzy}, '%')
+			</if>
+			<if test="query.outerLinkFuzzy!= null  and query.outerLinkFuzzy!=''">
+				 and  outer_link like concat('%', #{query.outerLinkFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM cul_carousel <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM cul_carousel <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.cultural.entity.po.CulCarousel">
+		<selectKey keyProperty="bean.carouselId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO cul_carousel
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.pcImgUrl != null">
+				 pc_img_url,
+			</if>
+			<if test="bean.appImgUrl != null">
+				 app_img_url,
+			</if>
+			<if test="bean.objectType != null">
+				 object_type,
+			</if>
+			<if test="bean.objectId != null">
+				 object_id,
+			</if>
+			<if test="bean.outerLink != null">
+				 outer_link,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.pcImgUrl!=null">
+				 #{bean.pcImgUrl},
+			</if>
+			<if test="bean.appImgUrl!=null">
+				 #{bean.appImgUrl},
+			</if>
+			<if test="bean.objectType!=null">
+				 #{bean.objectType},
+			</if>
+			<if test="bean.objectId!=null">
+				 #{bean.objectId},
+			</if>
+			<if test="bean.outerLink!=null">
+				 #{bean.outerLink},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.cultural.entity.po.CulCarousel">
+		 INSERT INTO cul_carousel
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.carouselId != null">
+				 carousel_id,
+			</if>
+			<if test="bean.pcImgUrl != null">
+				 pc_img_url,
+			</if>
+			<if test="bean.appImgUrl != null">
+				 app_img_url,
+			</if>
+			<if test="bean.objectType != null">
+				 object_type,
+			</if>
+			<if test="bean.objectId != null">
+				 object_id,
+			</if>
+			<if test="bean.outerLink != null">
+				 outer_link,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.carouselId!=null">
+				 #{bean.carouselId},
+			</if>
+			<if test="bean.pcImgUrl!=null">
+				 #{bean.pcImgUrl},
+			</if>
+			<if test="bean.appImgUrl!=null">
+				 #{bean.appImgUrl},
+			</if>
+			<if test="bean.objectType!=null">
+				 #{bean.objectType},
+			</if>
+			<if test="bean.objectId!=null">
+				 #{bean.objectId},
+			</if>
+			<if test="bean.outerLink!=null">
+				 #{bean.outerLink},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.pcImgUrl!=null">
+				 pc_img_url = VALUES(pc_img_url),
+			</if>
+			<if test="bean.appImgUrl!=null">
+				 app_img_url = VALUES(app_img_url),
+			</if>
+			<if test="bean.objectType!=null">
+				 object_type = VALUES(object_type),
+			</if>
+			<if test="bean.objectId!=null">
+				 object_id = VALUES(object_id),
+			</if>
+			<if test="bean.outerLink!=null">
+				 outer_link = VALUES(outer_link),
+			</if>
+			<if test="bean.sort!=null">
+				 sort = VALUES(sort),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.cultural.entity.po.CulCarousel" useGeneratedKeys="true" keyProperty="carouselId">
+		 INSERT INTO cul_carousel(
+			 pc_img_url,
+			 app_img_url,
+			 object_type,
+			 object_id,
+			 outer_link,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.pcImgUrl},
+				 #{item.appImgUrl},
+				 #{item.objectType},
+				 #{item.objectId},
+				 #{item.outerLink},
+				 #{item.sort}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.cultural.entity.po.CulCarousel">
+		 INSERT INTO cul_carousel(
+			 pc_img_url,
+			 app_img_url,
+			 object_type,
+			 object_id,
+			 outer_link,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.pcImgUrl},
+				 #{item.appImgUrl},
+				 #{item.objectType},
+				 #{item.objectId},
+				 #{item.outerLink},
+				 #{item.sort}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			pc_img_url = VALUES(pc_img_url),
+			app_img_url = VALUES(app_img_url),
+			object_type = VALUES(object_type),
+			object_id = VALUES(object_id),
+			outer_link = VALUES(outer_link),
+			sort = VALUES(sort)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.cultural.entity.query.CulCarouselQuery">
+		 UPDATE cul_carousel
+ 		 <set> 
+			<if test="bean.pcImgUrl != null">
+				 pc_img_url = #{bean.pcImgUrl},
+			</if>
+			<if test="bean.appImgUrl != null">
+				 app_img_url = #{bean.appImgUrl},
+			</if>
+			<if test="bean.objectType != null">
+				 object_type = #{bean.objectType},
+			</if>
+			<if test="bean.objectId != null">
+				 object_id = #{bean.objectId},
+			</if>
+			<if test="bean.outerLink != null">
+				 outer_link = #{bean.outerLink},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from cul_carousel
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据CarouselId修改-->
+	<update id="updateByCarouselId" parameterType="com.cultural.entity.po.CulCarousel">
+		 UPDATE cul_carousel
+ 		 <set> 
+			<if test="bean.pcImgUrl != null">
+				 pc_img_url = #{bean.pcImgUrl},
+			</if>
+			<if test="bean.appImgUrl != null">
+				 app_img_url = #{bean.appImgUrl},
+			</if>
+			<if test="bean.objectType != null">
+				 object_type = #{bean.objectType},
+			</if>
+			<if test="bean.objectId != null">
+				 object_id = #{bean.objectId},
+			</if>
+			<if test="bean.outerLink != null">
+				 outer_link = #{bean.outerLink},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 where carousel_id=#{carouselId}
+	</update>
+
+	<!-- 根据CarouselId删除-->
+	<delete id="deleteByCarouselId">
+		delete from cul_carousel where carousel_id=#{carouselId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByCarouselId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from cul_carousel where carousel_id=#{carouselId}
+	</select>
+
+</mapper>
