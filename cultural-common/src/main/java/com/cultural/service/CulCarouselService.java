@@ -5,6 +5,7 @@ import java.util.List;
 import com.cultural.entity.query.CulCarouselQuery;
 import com.cultural.entity.po.CulCarousel;
 import com.cultural.entity.vo.PaginationResultVO;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -69,7 +70,7 @@ public interface CulCarouselService {
 	 */
 	Integer deleteCulCarouselByCarouselId(Integer carouselId);
 
-    void saveCarousel(CulCarousel appCarousel);
+    void saveCarousel(CulCarousel culCarousel);
 
 	Integer deleteAppCarouselByCarouselId(Integer carouselId);
 

@@ -14,6 +14,7 @@ import com.cultural.entity.query.SimplePage;
 import com.cultural.mappers.CulCarouselMapper;
 import com.cultural.service.CulCarouselService;
 import com.cultural.utils.StringTools;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -131,8 +132,8 @@ public class CulCarouselServiceImpl implements CulCarouselService {
     @Override
     public void saveCarousel(CulCarousel bean) {
         if (bean.getCarouselId() == null) {  // 新增
-            CulCarouselQuery appCarouselQuery = new CulCarouselQuery();
-            Integer count = culCarouselMapper.selectCount(appCarouselQuery);
+            CulCarouselQuery culCarouselQuery = new CulCarouselQuery();
+            Integer count = culCarouselMapper.selectCount(culCarouselQuery);
             bean.setSort(count + 1);
             this.culCarouselMapper.insert(bean);
         } else {
@@ -140,21 +141,21 @@ public class CulCarouselServiceImpl implements CulCarouselService {
         }
     }
 
-	@Override
-	public Integer deleteAppCarouselByCarouselId(Integer carouselId) {
-		return this.culCarouselMapper.deleteByCarouselId(carouselId);
-	}
+    @Override
+    public Integer deleteAppCarouselByCarouselId(Integer carouselId) {
+        return this.culCarouselMapper.deleteByCarouselId(carouselId);
+    }
 
-	@Override
-	public void changeSort(String carouselIds) {
-		String[] carouselIdArray = carouselIds.split(",");
-		Integer index = 1;
-		for (String carouselIdStr : carouselIdArray) {
-			Integer carouselId = Integer.parseInt(carouselIdStr);
-			CulCarousel appCarousel = new CulCarousel();
-			appCarousel.setSort(index);
-			culCarouselMapper.updateByCarouselId(appCarousel, carouselId);
-			index++;
-		}
-	}
+    @Override
+    public void changeSort(String carouselIds) {
+        String[] carouselIdArray = carouselIds.split(",");
+        Integer index = 1;
+        for (String carouselIdStr : carouselIdArray) {
+            Integer carouselId = Integer.parseInt(carouselIdStr);
+            CulCarousel appCarousel = new CulCarousel();
+            appCarousel.setSort(index);
+            culCarouselMapper.updateByCarouselId(appCarousel, carouselId);
+            index++;
+        }
+    }
 }

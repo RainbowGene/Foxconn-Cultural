@@ -135,4 +135,17 @@ public class StringTools {
         htmlStr = htmlStr.replaceAll(" ", ""); //过滤
         return htmlStr.trim(); // 返回文本字符串
     }
+
+    /***
+     * 安全风险：访问时可能会暴露其他文件
+     */
+    public static boolean pathIsOk(String path) {
+        if (StringTools.isEmpty(path)) {
+            return true;
+        }
+        if (path.contains("../") || path.contains("..\\")) {
+            return false;
+        }
+        return true;
+    }
 }

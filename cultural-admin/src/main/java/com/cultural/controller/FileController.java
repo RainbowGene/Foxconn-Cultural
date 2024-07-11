@@ -3,9 +3,13 @@ package com.cultural.controller;
 import com.cultural.annotation.GlobalInterceptor;
 import com.cultural.annotation.VerifyParam;
 import com.cultural.entity.config.AdminConfig;
+import com.cultural.entity.config.AppConfig;
 import com.cultural.entity.constants.Constants;
+import com.cultural.entity.enums.DateTimePatternEnum;
+import com.cultural.entity.enums.NewUploadFileEnum;
 import com.cultural.entity.vo.ResponseVO;
 import com.cultural.exception.BusinessException;
+import com.cultural.utils.DateUtil;
 import com.cultural.utils.ScaleFilter;
 import com.cultural.utils.StringTools;
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,6 +27,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +39,9 @@ public class FileController extends ABaseController {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
+
+    @Resource
+    private AppConfig appConfig;
 
 
     @Resource
@@ -131,7 +139,7 @@ public class FileController extends ABaseController {
             }
         }
     }
-    
+
     @RequestMapping("uploadImage")
     @GlobalInterceptor
     public ResponseVO uploadImage(MultipartFile file) {
@@ -228,6 +236,7 @@ public class FileController extends ABaseController {
 
     /**
      * 读取pdf
+     *
      * @param pdfFolder
      * @param pdfName
      * @param response
@@ -281,6 +290,100 @@ public class FileController extends ABaseController {
                     in.close();
                 } catch (IOException e) {
                     logger.error("IO异常", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 使用 easy_job 项目里的上传接口,以下代码都是
+     *
+     * @param file
+     * @param type
+     * @return
+     */
+    @RequestMapping("newUploadFile")
+    @GlobalInterceptor
+    public ResponseVO newUploadFile(MultipartFile file, Integer type) {
+        NewUploadFileEnum newUploadFileEnum = NewUploadFileEnum.getType(type);
+        String month = DateUtil.format(new Date(), DateTimePatternEnum.YYYYMM.getPattern());
+        String folderName = appConfig.getProjectFolder() + month; // 上传文件的放置位置
+        File folder = new File(folderName);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        String fileSuffix = StringTools.getFileSuffix(file.getOriginalFilename());
+        String realFileName = StringTools.getRandomString(Constants.LENGTH_30) + fileSuffix;
+        String realFilePath = month + "/" + realFileName;
+        File localFile = new File(appConfig.getProjectFolder() + realFilePath);
+        try {
+            file.transferTo(localFile);
+            // 裁剪图片
+            if (newUploadFileEnum != null) {
+                ScaleFilter.createThumbnail(localFile, newUploadFileEnum.getMaxWidth(), newUploadFileEnum.getMaxWidth(), localFile);
+            }
+        } catch (IOException e) {
+            logger.error("文件上传失败", e);
+            throw new BusinessException("文件上传失败");
+        }
+        return getSuccessResponseVO(realFilePath);
+    }
+
+    @RequestMapping("/newGetImage/{imageFolder}/{imageName}")
+    @GlobalInterceptor
+    public void newGetImage(HttpServletResponse response,
+                            @PathVariable("imageFolder") String imageFolder,
+                            @PathVariable("imageName") String imageName) {
+        newReadImage(response, imageFolder, imageName);
+    }
+
+    private void newReadImage(HttpServletResponse response, String imageFolder, String imageName) {
+        if (StringTools.isEmpty(imageFolder) || StringUtils.isBlank(imageName)) {
+            return;
+        }
+        String imageSuffix = StringTools.getFileSuffix(imageName);
+        String filePath = appConfig.getProjectFolder() + imageFolder + "/" + imageName;
+        imageSuffix = imageSuffix.replace(".", "");
+        String contentType = "image/" + imageSuffix;
+        response.setContentType(contentType);
+        response.setHeader("Cache-Control", "max-age=2592000");
+        readFile(response, filePath);
+    }
+
+    protected void readFile(HttpServletResponse response, String filepath) {
+        if (!StringTools.pathIsOk(filepath)) {
+            return;
+        }
+        OutputStream out = null;
+        FileInputStream in = null;
+        try {
+            File file = new File(filepath);
+            if (!file.exists()) {
+                return;
+            }
+            in = new FileInputStream(file);
+            byte[] byteData = new byte[1024];
+            out = response.getOutputStream();
+            int len = 0;
+            while ((len = in.read(byteData)) != -1) {
+                out.write(byteData, 0, len);
+            }
+            out.flush();
+        } catch (Exception e) {
+            logger.error("文件读取异常", e);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.error("IO异常");
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    logger.error("IO异常");
                 }
             }
         }
